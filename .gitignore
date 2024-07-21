@@ -1,0 +1,5 @@
+.idea
+.env
+venv
+creds.json
+client_secrets.json
