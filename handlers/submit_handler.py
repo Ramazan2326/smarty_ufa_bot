@@ -196,7 +196,7 @@ async def process_q4(msg: types.Message, state: FSMContext):
         try:
             photo = msg.photo[-1]
             photo_ids.append(photo.file_id)
-            mybot.get_file(photo.file_id)
+            await mybot.get_file(photo.file_id)
             await msg.answer('Фото было успешно сохранено!')
             await state.update_data(QUESTION_4=photo.file_id)
             await state.set_state(SubmitFormStates.QUESTION_5)
