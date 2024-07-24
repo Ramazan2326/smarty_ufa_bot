@@ -15,10 +15,3 @@ credentials = ServiceAccountCredentials.from_json_keyfile_name(
      'https://www.googleapis.com/auth/drive'])
 httpAuth = credentials.authorize(httplib2.Http())
 service = apiclient.discovery.build('sheets', 'v4', http=httpAuth)
-
-# Чтение листа заявок
-output_values = service.spreadsheets().values().get(
-    spreadsheetId=spreadsheet_id,
-    range='Заявки!A1:E10',
-    majorDimension='COLUMNS'
-).execute()

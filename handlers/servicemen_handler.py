@@ -8,17 +8,6 @@ import datetime as dt
 
 router_servicemen = Router()
 
-output_submit_values = service.spreadsheets().values().get(
-    spreadsheetId=spreadsheet_id,
-    range='Заявки!A:J',
-    majorDimension='ROWS'
-).execute()['values'][2:]
-servicemen = service.spreadsheets().values().get(
-    spreadsheetId=spreadsheet_id,
-    range='Сервисмены!A:F',
-    majorDimension='ROWS'
-).execute()['values'][2:]
-
 
 class CommandsServCallback(CallbackData, prefix='commands'):
     foo: str
@@ -40,6 +29,16 @@ builder_commands_servicemen.adjust(1)
 @router_servicemen.callback_query(
     CommandsServCallback.filter(F.foo == "/alltasks"))
 async def callback_actual(query: CallbackQuery):
+    output_submit_values = service.spreadsheets().values().get(
+        spreadsheetId=spreadsheet_id,
+        range='Заявки!A:J',
+        majorDimension='ROWS'
+    ).execute()['values'][2:]
+    servicemen = service.spreadsheets().values().get(
+        spreadsheetId=spreadsheet_id,
+        range='Сервисмены!A:F',
+        majorDimension='ROWS'
+    ).execute()['values'][2:]
     await query.message.answer("Актуальные заявки:")
     SERV_ID = None
     USER_ID = int(query.from_user.id)
@@ -53,7 +52,6 @@ async def callback_actual(query: CallbackQuery):
                     text = f"Заявка №{submit[0]}\n" \
                            f"{submit[2]} – {submit[5]}"
                     if photo_id == 'нет':
-                        print('нашлось')
                         await query.message.answer(text)
                     elif photo_id != 'нет':
                         await mybot.send_photo(query.message.chat.id, photo=photo_id, caption=text)
@@ -62,6 +60,16 @@ async def callback_actual(query: CallbackQuery):
 @router_servicemen.callback_query(
     CommandsServCallback.filter(F.foo == "/hottasks"))
 async def callback_hottasks(query: CallbackQuery):
+    output_submit_values = service.spreadsheets().values().get(
+        spreadsheetId=spreadsheet_id,
+        range='Заявки!A:J',
+        majorDimension='ROWS'
+    ).execute()['values'][2:]
+    servicemen = service.spreadsheets().values().get(
+        spreadsheetId=spreadsheet_id,
+        range='Сервисмены!A:F',
+        majorDimension='ROWS'
+    ).execute()['values'][2:]
     await query.message.answer(
         "Горящие заявки (до крайнего срока выполнения остается 3 дня):")
     after_three_days = (dt.date.today() + dt.timedelta(days=3)).strftime(

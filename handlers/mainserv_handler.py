@@ -34,22 +34,6 @@ class ServicemenCallback(CallbackData, prefix='commands'):
     foo: str
 
 
-output_submit_values = service.spreadsheets().values().get(
-    spreadsheetId=spreadsheet_id,
-    range='Заявки!A:J',
-    majorDimension='ROWS'
-).execute()['values'][2:]
-arendators_values = service.spreadsheets().values().get(
-    spreadsheetId=spreadsheet_id,
-    range='Арендаторы!A:G',
-    majorDimension='ROWS'
-).execute()['values'][2:]
-servicemen_values = service.spreadsheets().values().get(
-    spreadsheetId=spreadsheet_id,
-    range='Сервисмены!A:F',
-    majorDimension='ROWS'
-).execute()['values'][2:]
-
 builder_commands_main_servicemen = InlineKeyboardBuilder()
 main_servicemen_button1 = builder_commands_main_servicemen.button(
     text="Вывести актуальные заявки",
@@ -69,6 +53,11 @@ builder_commands_main_servicemen.adjust(1)
 # Callback-обработчик для кнопки "Вывести актуальные заявки"
 @mainserv_router.callback_query(CommandsCallback.filter(F.foo == "/actual"))
 async def callback_actual(query: CallbackQuery):
+    output_submit_values = service.spreadsheets().values().get(
+        spreadsheetId=spreadsheet_id,
+        range='Заявки!A:J',
+        majorDimension='ROWS'
+    ).execute()['values'][2:]
     await query.message.answer("Актуальные заявки:")
 
     for submit in output_submit_values:
@@ -112,6 +101,11 @@ async def process_q1(msg: types.Message, state: FSMContext):
 
 @mainserv_router.message(ChangeFormStates.QUESTION_2)
 async def process_q2(msg: types.Message, state: FSMContext):
+    output_submit_values = service.spreadsheets().values().get(
+        spreadsheetId=spreadsheet_id,
+        range='Заявки!A:J',
+        majorDimension='ROWS'
+    ).execute()['values'][2:]
     try:
         msg_text = str(msg.text)
         await state.update_data(QUESTION_2=msg_text)
@@ -136,7 +130,7 @@ async def process_q2(msg: types.Message, state: FSMContext):
                 ).execute()
                 await msg.answer("Статус успешно изменен")
             else:
-                print('Такой заявки не существует')
+                await msg.answer('Такой заявки не существует')
         await state.clear()
     except ValueError:
         await msg.answer("Ошибка ввода")
@@ -168,6 +162,16 @@ async def process_red_q1(msg: types.Message, state: FSMContext):
 
 @mainserv_router.message(RedirectFormStates.QUESTION_2)
 async def process_red_q2(msg: types.Message, state: FSMContext):
+    output_submit_values = service.spreadsheets().values().get(
+        spreadsheetId=spreadsheet_id,
+        range='Заявки!A:J',
+        majorDimension='ROWS'
+    ).execute()['values'][2:]
+    servicemen_values = service.spreadsheets().values().get(
+        spreadsheetId=spreadsheet_id,
+        range='Сервисмены!A:F',
+        majorDimension='ROWS'
+    ).execute()['values'][2:]
     try:
         msg_text = str(msg.text)
         await state.update_data(QUESTION_2=msg_text)

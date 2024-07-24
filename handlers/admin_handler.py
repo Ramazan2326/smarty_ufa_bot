@@ -9,13 +9,6 @@ from main import mybot
 router_admin = Router()
 
 
-output_submit_values = service.spreadsheets().values().get(
-    spreadsheetId=spreadsheet_id,
-    range='Заявки!A:J',
-    majorDimension='ROWS'
-).execute()['values'][2:]
-
-
 class DetailFormStates(StatesGroup):
     QUESTION_1 = State()
 
@@ -34,6 +27,11 @@ async def callback_getinfo(msg: types.Message, state: FSMContext):
 
 @router_admin.message(DetailFormStates.QUESTION_1)
 async def process_getinfo_q1(msg: types.Message, state: FSMContext):
+    output_submit_values = service.spreadsheets().values().get(
+        spreadsheetId=spreadsheet_id,
+        range='Заявки!A:J',
+        majorDimension='ROWS'
+    ).execute()['values'][2:]
     try:
         msg_text = int(msg.text)
         await state.update_data(QUESTION_1=msg_text)
